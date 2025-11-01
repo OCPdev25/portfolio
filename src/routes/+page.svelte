@@ -19,6 +19,7 @@
 	import Tanstack from '$lib/components/icons/Tanstack.svelte';
 </script>
 
+<h1>Skills</h1>
 <div class="flex h-screen items-center justify-center">
 	<Bun class="w-1/2" /> <br /> <span>Bun</span>
 	<Javascript class="w-1/2" /> <span>JavaScript</span> <br />
