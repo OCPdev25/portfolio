@@ -8,5 +8,5 @@
 	width="256"
 	height="222"
 	xmlns="http://www.w3.org/2000/svg"
-	preserveAspectRatio="xMidYMid"><path fill="#000" d="m128 0 128 221.705H0z" /></svg
+	preserveAspectRatio="xMidYMid"><path fill="#FFF" d="m128 0 128 221.705H0z" /></svg
 >
