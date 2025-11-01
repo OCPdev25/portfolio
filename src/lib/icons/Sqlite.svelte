@@ -2,7 +2,12 @@
 	let { ...rest } = $props();
 </script>
 
-<svg xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid" viewBox="0 0 512 228" {...rest}>
+<svg
+	xmlns="http://www.w3.org/2000/svg"
+	preserveAspectRatio="xMidYMid"
+	viewBox="0 0 512 228"
+	{...rest}
+>
 	<defs>
 		<linearGradient x1="57.7%" y1="2%" x2="57.7%" y2="94.4%" id="sqlite-a">
 			<stop stop-color="#97D9F6" offset="0%" />
