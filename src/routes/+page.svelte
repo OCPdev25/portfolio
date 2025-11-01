@@ -1,17 +1,13 @@
 <script lang="ts">
+	import { icons } from '$lib/icons';
 	import SkillCard from '$lib/components/SkillCard.svelte';
 </script>
 
-<h1 class="text-4xl font-bold">Skills</h1>
-
-<SkillCard skill="JavaScript" />
-<SkillCard skill="TypeScript" />
-<SkillCard skill="Svelte" />
-<SkillCard skill="React" />
-<SkillCard skill="Next.js" />
-<SkillCard skill="Tailwind CSS" />
-<SkillCard skill="HTML" />
-<SkillCard skill="CSS" />
-<SkillCard skill="Git" />
-<SkillCard skill="GitHub" />
-<SkillCard skill="GitLab" />
+<div>
+	<h1 class="mb-4 text-4xl font-bold">Skills</h1>
+	<div class="flex flex-wrap gap-2">
+		{#each icons as { name, component }}
+			<SkillCard skill={name} IconComponent={component} />
+		{/each}
+	</div>
+</div>
