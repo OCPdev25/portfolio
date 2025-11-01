@@ -2,7 +2,14 @@
 	let { ...rest } = $props();
 </script>
 
-<svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg" {...rest}>
+<svg
+	width="180"
+	height="180"
+	viewBox="0 0 180  180"
+	{...rest}
+	fill="none"
+	xmlns="http://www.w3.org/2000/svg"
+>
 	<mask
 		id="nextjs_icon_dark-mask0_408_139"
 		style="mask-type:alpha"
