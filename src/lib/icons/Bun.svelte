@@ -20,14 +20,14 @@
 		return isPeeking ? `translate(0, -${peekDistance}px)` : 'translate(0, 0)';
 	}
 
-	async function blink(duration = 100): Promise<void> {
+	async function BunBlink(duration = 100): Promise<void> {
 		isBlinking = true;
 		await new Promise((resolve) => setTimeout(resolve, duration));
 		isBlinking = false;
 		await new Promise((resolve) => setTimeout(resolve, duration));
 	}
 
-	async function excessiveBlink(blinkCount = 4, blinkDuration = 80): Promise<void> {
+	async function BunExcessiveBlinkOnSuspension(blinkCount = 4, blinkDuration = 80): Promise<void> {
 		for (let i = 0; i < blinkCount; i++) {
 			isBlinking = true;
 			await new Promise((resolve) => setTimeout(resolve, blinkDuration));
@@ -43,7 +43,7 @@
 
 		// 1. Initial blink
 		animationState = 'initial-blink';
-		await blink(100);
+		await BunBlink(100);
 		if (!isHovered) return;
 
 		// 2. Peek up
@@ -59,7 +59,7 @@
 
 		// 4. Blink while suspended (excessive blinking)
 		animationState = 'blinking-suspended';
-		await excessiveBlink(5, 60);
+		await BunExcessiveBlinkOnSuspension(5, 60);
 		if (!isHovered) return;
 
 		// 5. Descend back to original position
@@ -70,7 +70,7 @@
 
 		// 6. Final blink
 		animationState = 'final-blink';
-		await blink(100);
+		await BunBlink(100);
 
 		// Reset
 		animationState = 'idle';
