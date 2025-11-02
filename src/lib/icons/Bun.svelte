@@ -1,72 +1,80 @@
 <script lang="ts">
-	type PeekDirection = 'top' | 'bottom' | 'left';
-
-	let { animationDuration = 500, ...rest } = $props();
+	let { animationDuration = 650, suspensionTime = 550, ...rest } = $props();
 
 	let isHovered = $state(false);
-	let peekDirection = $state<PeekDirection | null>(null);
+	let isPeeking = $state(false);
 	let isBlinking = $state(false);
-	let animationState = $state<'idle' | 'peeking' | 'blinking' | 'returning'>('idle');
+	let animationState = $state<
+		| 'idle'
+		| 'initial-blink'
+		| 'peeking'
+		| 'suspended'
+		| 'blinking-suspended'
+		| 'descending'
+		| 'final-blink'
+	>('idle');
 
-	const directions: PeekDirection[] = ['top', 'bottom', 'left'];
+	const peekDistance = 11; // Distance to peek above shadow
 
-	function getRandomDirection(): PeekDirection {
-		return directions[Math.floor(Math.random() * directions.length)];
+	function getTransform(): string {
+		return isPeeking ? `translate(0, -${peekDistance}px)` : 'translate(0, 0)';
 	}
 
-	function getTransform(direction: PeekDirection | null): string {
-		if (!direction) return 'translate(0, 0)';
-
-		const peekDistance = 25;
-		switch (direction) {
-			case 'top':
-				return `translate(0, -${peekDistance}px)`;
-			case 'bottom':
-				return `translate(0, ${peekDistance}px)`;
-			case 'left':
-				return `translate(-${peekDistance}px, 0)`;
-		}
+	async function blink(duration = 100): Promise<void> {
+		isBlinking = true;
+		await new Promise((resolve) => setTimeout(resolve, duration));
+		isBlinking = false;
+		await new Promise((resolve) => setTimeout(resolve, duration));
 	}
 
 	async function handleHover() {
 		if (animationState !== 'idle') return;
 
 		isHovered = true;
-		peekDirection = getRandomDirection();
-		animationState = 'peeking';
 
-		// Wait for peek animation
-		await new Promise((resolve) => setTimeout(resolve, animationDuration));
-
+		// 1. Initial blink
+		animationState = 'initial-blink';
+		await blink(100);
 		if (!isHovered) return;
 
-		// Blink twice
-		animationState = 'blinking';
-		for (let i = 0; i < 3; i++) {
-			isBlinking = true;
-			await new Promise((resolve) => setTimeout(resolve, 80));
-			isBlinking = false;
-			await new Promise((resolve) => setTimeout(resolve, 100));
-			if (!isHovered) return;
-		}
-
-		// Return to original position
-		animationState = 'returning';
+		// 2. Peek up
+		animationState = 'peeking';
+		isPeeking = true;
 		await new Promise((resolve) => setTimeout(resolve, animationDuration));
+		if (!isHovered) return;
+
+		// 3. Suspended peek (peek-a-boo moment)
+		animationState = 'suspended';
+		await new Promise((resolve) => setTimeout(resolve, suspensionTime));
+		if (!isHovered) return;
+
+		// 4. Blink while suspended
+		animationState = 'blinking-suspended';
+		await blink(150);
+		if (!isHovered) return;
+
+		// 5. Descend back to original position
+		animationState = 'descending';
+		isPeeking = false;
+		await new Promise((resolve) => setTimeout(resolve, animationDuration));
+		if (!isHovered) return;
+
+		// 6. Final blink
+		animationState = 'final-blink';
+		await blink(100);
 
 		// Reset
 		animationState = 'idle';
-		peekDirection = null;
 		isBlinking = false;
 	}
 
 	function handleMouseLeave() {
 		isHovered = false;
-
+		// Graceful exit - allow current animation to complete if possible
 		setTimeout(() => {
 			if (!isHovered) {
 				animationState = 'idle';
-				peekDirection = null;
+				isPeeking = false;
 				isBlinking = false;
 			}
 		}, animationDuration);
@@ -85,9 +93,9 @@
 	onmouseenter={handleHover}
 	onmouseleave={handleMouseLeave}
 	style="
-		transform: {getTransform(peekDirection)};
+		transform: {getTransform()};
 		transform-origin: center;
-		transition: transform {animationDuration}ms cubic-bezier(0.34, 1.56, 0.64, 1);
+		transition: transform {animationDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 		filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 		will-change: transform;
 	"
@@ -175,6 +183,7 @@
 <style>
 	:global(:root) {
 		--bun-animation-duration: 500ms;
+		--bun-suspension-time: 550ms;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
