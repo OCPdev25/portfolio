@@ -1,13 +1,23 @@
 <script lang="ts">
-	import { icons } from '$lib/icons';
+	import { onMount } from 'svelte';
+	import { getOrderedIcons } from '$lib/icons';
 	import SkillCard from '$lib/components/SkillCard.svelte';
+
+	// Randomize on each component mount (page load/navigation)
+	let orderedIcons = $state<Array<{ name: string; component: any }>>([]);
+
+	onMount(() => {
+		orderedIcons = getOrderedIcons();
+	});
 </script>
 
 <div>
 	<h1 class="mb-4 text-4xl font-bold">Skills</h1>
 	<div class="flex flex-wrap gap-2">
-		{#each icons as { name, component }}
-			<SkillCard skill={name} IconComponent={component} />
-		{/each}
+		{#key orderedIcons.map((i) => i.name).join(',')}
+			{#each orderedIcons as icon (icon.name)}
+				<SkillCard skill={icon.name} IconComponent={icon.component} />
+			{/each}
+		{/key}
 	</div>
 </div>
