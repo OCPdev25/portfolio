@@ -1,5 +1,5 @@
 <script lang="ts">
-	let { animationDuration = 650, suspensionTime = 550, ...rest } = $props();
+	let { animationDuration = 600, suspensionTime = 500, ...rest } = $props();
 
 	let isHovered = $state(false);
 	let isPeeking = $state(false);
