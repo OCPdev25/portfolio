@@ -1,14 +1,14 @@
 <script lang="ts">
-	type PeekDirection = 'top' | 'bottom' | 'left' | 'right';
+	type PeekDirection = 'top' | 'bottom' | 'left';
 
-	let { animationDuration = 600, ...rest } = $props();
+	let { animationDuration = 500, ...rest } = $props();
 
 	let isHovered = $state(false);
 	let peekDirection = $state<PeekDirection | null>(null);
 	let isBlinking = $state(false);
 	let animationState = $state<'idle' | 'peeking' | 'blinking' | 'returning'>('idle');
 
-	const directions: PeekDirection[] = ['top', 'bottom', 'left', 'right'];
+	const directions: PeekDirection[] = ['top', 'bottom', 'left'];
 
 	function getRandomDirection(): PeekDirection {
 		return directions[Math.floor(Math.random() * directions.length)];
@@ -25,8 +25,6 @@
 				return `translate(0, ${peekDistance}px)`;
 			case 'left':
 				return `translate(-${peekDistance}px, 0)`;
-			case 'right':
-				return `translate(${peekDistance}px, 0)`;
 		}
 	}
 
@@ -44,11 +42,11 @@
 
 		// Blink twice
 		animationState = 'blinking';
-		for (let i = 0; i < 2; i++) {
+		for (let i = 0; i < 3; i++) {
 			isBlinking = true;
 			await new Promise((resolve) => setTimeout(resolve, 80));
 			isBlinking = false;
-			await new Promise((resolve) => setTimeout(resolve, 80));
+			await new Promise((resolve) => setTimeout(resolve, 100));
 			if (!isHovered) return;
 		}
 
@@ -64,7 +62,7 @@
 
 	function handleMouseLeave() {
 		isHovered = false;
-		// Reset after a short delay to allow animation to complete gracefully
+
 		setTimeout(() => {
 			if (!isHovered) {
 				animationState = 'idle';
@@ -176,7 +174,7 @@
 
 <style>
 	:global(:root) {
-		--bun-animation-duration: 600ms;
+		--bun-animation-duration: 500ms;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
