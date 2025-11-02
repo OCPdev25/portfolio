@@ -8,16 +8,6 @@
 	}
 
 	let { skill, IconComponent, variant = '4' }: Props = $props();
-
-	function getShadowClass(variant: string): string {
-		switch (variant) {
-			case '2':
-				return 'shadow-skill-secondary';
-			case '4':
-			default:
-				return 'shadow-skill-main';
-		}
-	}
 </script>
 
 <div class="flex items-center gap-3 rounded bg-background py-1.5 pr-4 pl-3 shadow-skill-main">
