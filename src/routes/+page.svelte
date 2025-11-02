@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { getOrderedIcons } from '$lib/icons';
+	import { getOrderedIcons } from '$lib/icons/orderedIcons.svelte';
 	import SkillCard from '$lib/components/SkillCard.svelte';
 
 	// Randomize on each component mount (page load/navigation)
