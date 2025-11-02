@@ -1,8 +1,100 @@
 <script lang="ts">
-	let { ...rest } = $props();
+	type PeekDirection = 'top' | 'bottom' | 'left' | 'right';
+
+	let { animationDuration = 600, ...rest } = $props();
+
+	let isHovered = $state(false);
+	let peekDirection = $state<PeekDirection | null>(null);
+	let isBlinking = $state(false);
+	let animationState = $state<'idle' | 'peeking' | 'blinking' | 'returning'>('idle');
+
+	const directions: PeekDirection[] = ['top', 'bottom', 'left', 'right'];
+
+	function getRandomDirection(): PeekDirection {
+		return directions[Math.floor(Math.random() * directions.length)];
+	}
+
+	function getTransform(direction: PeekDirection | null): string {
+		if (!direction) return 'translate(0, 0)';
+
+		const peekDistance = 25;
+		switch (direction) {
+			case 'top':
+				return `translate(0, -${peekDistance}px)`;
+			case 'bottom':
+				return `translate(0, ${peekDistance}px)`;
+			case 'left':
+				return `translate(-${peekDistance}px, 0)`;
+			case 'right':
+				return `translate(${peekDistance}px, 0)`;
+		}
+	}
+
+	async function handleHover() {
+		if (animationState !== 'idle') return;
+
+		isHovered = true;
+		peekDirection = getRandomDirection();
+		animationState = 'peeking';
+
+		// Wait for peek animation
+		await new Promise((resolve) => setTimeout(resolve, animationDuration));
+
+		if (!isHovered) return;
+
+		// Blink twice
+		animationState = 'blinking';
+		for (let i = 0; i < 2; i++) {
+			isBlinking = true;
+			await new Promise((resolve) => setTimeout(resolve, 80));
+			isBlinking = false;
+			await new Promise((resolve) => setTimeout(resolve, 80));
+			if (!isHovered) return;
+		}
+
+		// Return to original position
+		animationState = 'returning';
+		await new Promise((resolve) => setTimeout(resolve, animationDuration));
+
+		// Reset
+		animationState = 'idle';
+		peekDirection = null;
+		isBlinking = false;
+	}
+
+	function handleMouseLeave() {
+		isHovered = false;
+		// Reset after a short delay to allow animation to complete gracefully
+		setTimeout(() => {
+			if (!isHovered) {
+				animationState = 'idle';
+				peekDirection = null;
+				isBlinking = false;
+			}
+		}, animationDuration);
+	}
+
+	// For closed eyes, we'll use a horizontal line instead
+	// Left eye center: 24, Right eye center: 24 + 24.77 = 48.77
+	// Eye radius: 2.07, so diameter is 4.14
+	const leftEyeClosedPath = 'M21.94 33.64h4.12';
+	const rightEyeClosedPath = 'M46.71 33.64h4.12';
 </script>
 
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 70" {...rest}>
+<svg
+	xmlns="http://www.w3.org/2000/svg"
+	viewBox="0 0 80 70"
+	onmouseenter={handleHover}
+	onmouseleave={handleMouseLeave}
+	style="
+		transform: {getTransform(peekDirection)};
+		transform-origin: center;
+		transition: transform {animationDuration}ms cubic-bezier(0.34, 1.56, 0.64, 1);
+		filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+		will-change: transform;
+	"
+	{...rest}
+>
 	<path
 		d="M71.09 20.74c-.16-.17-.33-.34-.5-.5s-.33-.34-.5-.5-.33-.34-.5-.5-.33-.34-.5-.5-.33-.34-.5-.5-.33-.34-.5-.5-.33-.34-.5-.5A26.46 26.46 0 0 1 75.5 35.7c0 16.57-16.82 30.05-37.5 30.05-11.58 0-21.94-4.23-28.83-10.86l.5.5.5.5.5.5.5.5.5.5.5.5.5.5C19.55 65.3 30.14 69.75 42 69.75c20.68 0 37.5-13.48 37.5-30 0-7.06-3.04-13.75-8.41-19.01Z"
 	/>
@@ -56,14 +148,40 @@
 			ry="3.44"
 			style="fill:#febbd0"
 		/>
-		<ellipse data-name="Left Bluch" cx="22.95" cy="40.18" rx="5.85" ry="3.44" style="fill:#febbd0" />
+		<ellipse
+			data-name="Left Bluch"
+			cx="22.95"
+			cy="40.18"
+			rx="5.85"
+			ry="3.44"
+			style="fill:#febbd0"
+		/>
 		<path
 			d="M25.7 38.8a5.51 5.51 0 1 0-5.5-5.51 5.51 5.51 0 0 0 5.5 5.51Zm24.77 0A5.51 5.51 0 1 0 45 33.29a5.5 5.5 0 0 0 5.47 5.51Z"
 			style="fill-rule:evenodd"
 		/>
-		<path
-			d="M24 33.64a2.07 2.07 0 1 0-2.06-2.07A2.07 2.07 0 0 0 24 33.64Zm24.77 0a2.07 2.07 0 1 0-2.06-2.07 2.07 2.07 0 0 0 2.04 2.07Z"
-			style="fill:#fff;fill-rule:evenodd"
-		/>
+		{#if isBlinking}
+			<!-- Closed eyes - horizontal lines -->
+			<path d={leftEyeClosedPath} stroke="#fff" stroke-width="2" stroke-linecap="round" />
+			<path d={rightEyeClosedPath} stroke="#fff" stroke-width="2" stroke-linecap="round" />
+		{:else}
+			<!-- Open eyes -->
+			<path
+				d="M24 33.64a2.07 2.07 0 1 0-2.06-2.07A2.07 2.07 0 0 0 24 33.64Zm24.77 0a2.07 2.07 0 1 0-2.06-2.07 2.07 2.07 0 0 0 2.04 2.07Z"
+				style="fill:#fff;fill-rule:evenodd"
+			/>
+		{/if}
 	</g>
 </svg>
+
+<style>
+	:global(:root) {
+		--bun-animation-duration: 600ms;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		svg {
+			transition: none !important;
+		}
+	}
+</style>
