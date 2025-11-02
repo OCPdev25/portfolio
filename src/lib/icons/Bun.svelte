@@ -27,6 +27,15 @@
 		await new Promise((resolve) => setTimeout(resolve, duration));
 	}
 
+	async function excessiveBlink(blinkCount = 4, blinkDuration = 80): Promise<void> {
+		for (let i = 0; i < blinkCount; i++) {
+			isBlinking = true;
+			await new Promise((resolve) => setTimeout(resolve, blinkDuration));
+			isBlinking = false;
+			await new Promise((resolve) => setTimeout(resolve, blinkDuration));
+		}
+	}
+
 	async function handleHover() {
 		if (animationState !== 'idle') return;
 
@@ -48,9 +57,9 @@
 		await new Promise((resolve) => setTimeout(resolve, suspensionTime));
 		if (!isHovered) return;
 
-		// 4. Blink while suspended
+		// 4. Blink while suspended (excessive blinking)
 		animationState = 'blinking-suspended';
-		await blink(150);
+		await excessiveBlink(5, 60);
 		if (!isHovered) return;
 
 		// 5. Descend back to original position
@@ -93,9 +102,11 @@
 	onmouseenter={handleHover}
 	onmouseleave={handleMouseLeave}
 	style="
+		--bun-animation-duration: {animationDuration}ms;
+		--bun-suspension-time: {suspensionTime}ms;
 		transform: {getTransform()};
 		transform-origin: center;
-		transition: transform {animationDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+		transition: transform var(--bun-animation-duration) cubic-bezier(0.25, 0.46, 0.45, 0.94);
 		filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 		will-change: transform;
 	"
@@ -181,11 +192,6 @@
 </svg>
 
 <style>
-	:global(:root) {
-		--bun-animation-duration: 500ms;
-		--bun-suspension-time: 550ms;
-	}
-
 	@media (prefers-reduced-motion: reduce) {
 		svg {
 			transition: none !important;
