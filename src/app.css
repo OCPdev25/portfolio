@@ -8,6 +8,13 @@
         --foreground: oklch(0.822 0 0);
         --shadow-skill-main: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.25);
         --shadow-skill-secondary: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+        /* Bun animation variables */
+        --bun-animation-duration: 600ms;
+        --bun-suspension-time: 500ms;
+        --bun-peek-distance: 11px;
+        --bun-easing: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        --bun-shadow: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
     }
 
 
@@ -17,4 +24,23 @@
 	--color-foreground: var(--foreground);
 	--shadow-skill-main: var(--shadow-skill-main);
 	--shadow-skill-secondary: var(--shadow-skill-secondary);
+}
+
+/* Bun animation styles */
+.bun-animated {
+	transform-origin: center;
+	transition: transform var(--bun-animation-duration) var(--bun-easing);
+	filter: var(--bun-shadow);
+	will-change: transform;
+}
+
+.bun-peeking {
+	transform: translate(0, calc(-1 * var(--bun-peek-distance)));
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.bun-animated,
+	.bun-peeking {
+		transition: none !important;
+	}
 }

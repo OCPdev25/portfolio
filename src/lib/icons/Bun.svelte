@@ -14,12 +14,6 @@
 		| 'final-blink'
 	>('idle');
 
-	const peekDistance = 11; // Distance to peek above shadow
-
-	function getTransform(): string {
-		return isPeeking ? `translate(0, -${peekDistance}px)` : 'translate(0, 0)';
-	}
-
 	async function BunBlink(duration = 100): Promise<void> {
 		isBlinking = true;
 		await new Promise((resolve) => setTimeout(resolve, duration));
@@ -99,16 +93,13 @@
 <svg
 	xmlns="http://www.w3.org/2000/svg"
 	viewBox="0 0 80 70"
+	class="bun-animated"
+	class:bun-peeking={isPeeking}
 	onmouseenter={handleHover}
 	onmouseleave={handleMouseLeave}
 	style="
 		--bun-animation-duration: {animationDuration}ms;
 		--bun-suspension-time: {suspensionTime}ms;
-		transform: {getTransform()};
-		transform-origin: center;
-		transition: transform var(--bun-animation-duration) cubic-bezier(0.25, 0.46, 0.45, 0.94);
-		filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-		will-change: transform;
 	"
 	{...rest}
 >
@@ -190,11 +181,3 @@
 		{/if}
 	</g>
 </svg>
-
-<style>
-	@media (prefers-reduced-motion: reduce) {
-		svg {
-			transition: none !important;
-		}
-	}
-</style>
