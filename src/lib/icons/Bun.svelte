@@ -1,87 +1,9 @@
 <script lang="ts">
+	import { createBunAnimation } from '$lib/Util/BunAnimation.svelte';
+
 	let { animationDuration = 600, suspensionTime = 500, ...rest } = $props();
 
-	let isHovered = $state(false);
-	let isPeeking = $state(false);
-	let isBlinking = $state(false);
-	let animationState = $state<
-		| 'idle'
-		| 'initial-blink'
-		| 'peeking'
-		| 'suspended'
-		| 'blinking-suspended'
-		| 'descending'
-		| 'final-blink'
-	>('idle');
-
-	async function BunBlink(duration = 100): Promise<void> {
-		isBlinking = true;
-		await new Promise((resolve) => setTimeout(resolve, duration));
-		isBlinking = false;
-		await new Promise((resolve) => setTimeout(resolve, duration));
-	}
-
-	async function BunExcessiveBlinkOnSuspension(blinkCount = 4, blinkDuration = 80): Promise<void> {
-		for (let i = 0; i < blinkCount; i++) {
-			isBlinking = true;
-			await new Promise((resolve) => setTimeout(resolve, blinkDuration));
-			isBlinking = false;
-			await new Promise((resolve) => setTimeout(resolve, blinkDuration));
-		}
-	}
-
-	async function handleHover() {
-		if (animationState !== 'idle') return;
-
-		isHovered = true;
-
-		// 1. Initial blink
-		animationState = 'initial-blink';
-		await BunBlink(100);
-		if (!isHovered) return;
-
-		// 2. Peek up
-		animationState = 'peeking';
-		isPeeking = true;
-		await new Promise((resolve) => setTimeout(resolve, animationDuration));
-		if (!isHovered) return;
-
-		// 3. Suspended peek (peek-a-boo moment)
-		animationState = 'suspended';
-		await new Promise((resolve) => setTimeout(resolve, suspensionTime));
-		if (!isHovered) return;
-
-		// 4. Blink while suspended (excessive blinking)
-		animationState = 'blinking-suspended';
-		await BunExcessiveBlinkOnSuspension(5, 60);
-		if (!isHovered) return;
-
-		// 5. Descend back to original position
-		animationState = 'descending';
-		isPeeking = false;
-		await new Promise((resolve) => setTimeout(resolve, animationDuration));
-		if (!isHovered) return;
-
-		// 6. Final blink
-		animationState = 'final-blink';
-		await BunBlink(100);
-
-		// Reset
-		animationState = 'idle';
-		isBlinking = false;
-	}
-
-	function handleMouseLeave() {
-		isHovered = false;
-		// Graceful exit - allow current animation to complete if possible
-		setTimeout(() => {
-			if (!isHovered) {
-				animationState = 'idle';
-				isPeeking = false;
-				isBlinking = false;
-			}
-		}, animationDuration);
-	}
+	const animation = createBunAnimation(animationDuration, suspensionTime);
 
 	// For closed eyes, we'll use a horizontal line instead
 	// Left eye center: 24, Right eye center: 24 + 24.77 = 48.77
@@ -94,9 +16,9 @@
 	xmlns="http://www.w3.org/2000/svg"
 	viewBox="0 0 80 70"
 	class="bun-animated"
-	class:bun-peeking={isPeeking}
-	onmouseenter={handleHover}
-	onmouseleave={handleMouseLeave}
+	class:bun-peeking={animation.state.isPeeking}
+	onmouseenter={animation.handleHover}
+	onmouseleave={animation.handleMouseLeave}
 	style="
 		--bun-animation-duration: {animationDuration}ms;
 		--bun-suspension-time: {suspensionTime}ms;
@@ -168,7 +90,7 @@
 			d="M25.7 38.8a5.51 5.51 0 1 0-5.5-5.51 5.51 5.51 0 0 0 5.5 5.51Zm24.77 0A5.51 5.51 0 1 0 45 33.29a5.5 5.5 0 0 0 5.47 5.51Z"
 			style="fill-rule:evenodd"
 		/>
-		{#if isBlinking}
+		{#if animation.state.isBlinking}
 			<!-- Closed eyes - horizontal lines -->
 			<path d={leftEyeClosedPath} stroke="#fff" stroke-width="2" stroke-linecap="round" />
 			<path d={rightEyeClosedPath} stroke="#fff" stroke-width="2" stroke-linecap="round" />
