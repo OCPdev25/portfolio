@@ -7,6 +7,7 @@
 	import AboutSection from '$lib/components/AboutSection.svelte';
 	import FeaturedProjects from '$lib/components/FeaturedProjects.svelte';
 	import ContactSection from '$lib/components/ContactSection.svelte';
+	import Footer from '$lib/components/Footer.svelte';
 
 	// Randomize on each component mount (page load/navigation)
 	let orderedIcons = $state<Array<{ name: string; component: any }>>([]);
@@ -44,3 +45,5 @@
 <FeaturedProjects />
 
 <ContactSection />
+
+<Footer />
