@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BunAnimation } from '$lib/Util/BunAnimation.svelte';
+	import { BunAnimation } from '$lib/Util/IconAnimation.svelte';
 
 	let { animationDuration = 600, suspensionTime = 500, ...rest } = $props();
 
