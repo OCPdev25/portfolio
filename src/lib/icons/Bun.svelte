@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { createBunAnimation } from '$lib/Util/BunAnimation.svelte';
+	import { BunAnimation } from '$lib/Util/BunAnimation.svelte';
 
 	let { animationDuration = 600, suspensionTime = 500, ...rest } = $props();
 
-	const animation = createBunAnimation(animationDuration, suspensionTime);
+	const animation = new BunAnimation(animationDuration, suspensionTime);
 
 	// For closed eyes, we'll use a horizontal line instead
 	// Left eye center: 24, Right eye center: 24 + 24.77 = 48.77
@@ -17,8 +17,8 @@
 	viewBox="0 0 80 70"
 	class="bun-animated"
 	class:bun-peeking={animation.state.isPeeking}
-	onmouseenter={animation.handleHover}
-	onmouseleave={animation.handleMouseLeave}
+	onmouseenter={() => animation.handleHover()}
+	onmouseleave={() => animation.handleMouseLeave()}
 	style="
 		--bun-animation-duration: {animationDuration}ms;
 		--bun-suspension-time: {suspensionTime}ms;
