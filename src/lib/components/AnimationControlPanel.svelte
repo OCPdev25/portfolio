@@ -1,11 +1,17 @@
 <script lang="ts">
 	import Bun from '$lib/icons/Bun.svelte';
 
-	let animationDuration = $state(400);
+	let animationDuration = $state(600);
+	let suspensionTime = $state(400);
 
 	function handleDurationChange(event: Event) {
 		const target = event.target as HTMLInputElement;
 		animationDuration = parseInt(target.value, 10);
+	}
+
+	function handleSuspensionChange(event: Event) {
+		const target = event.target as HTMLInputElement;
+		suspensionTime = parseInt(target.value, 10);
 	}
 </script>
 
@@ -32,10 +38,29 @@
 					<span>1000ms</span>
 				</div>
 			</div>
+			<div>
+				<label for="suspension-slider" class="mb-2 block text-sm text-gray-300">
+					Suspension Time: <span class="font-mono text-white">{suspensionTime}ms</span>
+				</label>
+				<input
+					id="suspension-slider"
+					type="range"
+					min="100"
+					max="1000"
+					step="50"
+					value={suspensionTime}
+					oninput={handleSuspensionChange}
+					class="w-full accent-purple-500"
+				/>
+				<div class="mt-1 flex justify-between text-xs text-gray-400">
+					<span>100ms</span>
+					<span>1000ms</span>
+				</div>
+			</div>
 			<div class="rounded bg-gray-700 p-4">
 				<p class="mb-2 text-sm text-gray-300">Preview:</p>
 				<div class="flex items-center justify-center">
-					<Bun {animationDuration} class="h-16 w-16" />
+					<Bun {animationDuration} {suspensionTime} class="h-16 w-16" />
 				</div>
 			</div>
 		</div>

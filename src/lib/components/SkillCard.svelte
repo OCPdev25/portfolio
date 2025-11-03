@@ -11,6 +11,6 @@
 </script>
 
 <div class="flex items-center gap-3 rounded bg-background py-1.5 pr-4 pl-3 shadow-skill-main">
-	<IconComponent class="h-4 w-4 shrink-0" />
+	<IconComponent class="h-8 w-12 shrink-0" />
 	<span class="text-sm whitespace-nowrap text-white">{skill}</span>
 </div>

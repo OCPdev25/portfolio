@@ -1,76 +1,9 @@
 <script lang="ts">
-	type PeekDirection = 'top' | 'bottom' | 'left';
+	import { BunAnimation } from '$lib/Util/IconAnimation.svelte';
 
-	let { animationDuration = 500, ...rest } = $props();
+	let { animationDuration = 600, suspensionTime = 500, ...rest } = $props();
 
-	let isHovered = $state(false);
-	let peekDirection = $state<PeekDirection | null>(null);
-	let isBlinking = $state(false);
-	let animationState = $state<'idle' | 'peeking' | 'blinking' | 'returning'>('idle');
-
-	const directions: PeekDirection[] = ['top', 'bottom', 'left'];
-
-	function getRandomDirection(): PeekDirection {
-		return directions[Math.floor(Math.random() * directions.length)];
-	}
-
-	function getTransform(direction: PeekDirection | null): string {
-		if (!direction) return 'translate(0, 0)';
-
-		const peekDistance = 25;
-		switch (direction) {
-			case 'top':
-				return `translate(0, -${peekDistance}px)`;
-			case 'bottom':
-				return `translate(0, ${peekDistance}px)`;
-			case 'left':
-				return `translate(-${peekDistance}px, 0)`;
-		}
-	}
-
-	async function handleHover() {
-		if (animationState !== 'idle') return;
-
-		isHovered = true;
-		peekDirection = getRandomDirection();
-		animationState = 'peeking';
-
-		// Wait for peek animation
-		await new Promise((resolve) => setTimeout(resolve, animationDuration));
-
-		if (!isHovered) return;
-
-		// Blink twice
-		animationState = 'blinking';
-		for (let i = 0; i < 3; i++) {
-			isBlinking = true;
-			await new Promise((resolve) => setTimeout(resolve, 80));
-			isBlinking = false;
-			await new Promise((resolve) => setTimeout(resolve, 100));
-			if (!isHovered) return;
-		}
-
-		// Return to original position
-		animationState = 'returning';
-		await new Promise((resolve) => setTimeout(resolve, animationDuration));
-
-		// Reset
-		animationState = 'idle';
-		peekDirection = null;
-		isBlinking = false;
-	}
-
-	function handleMouseLeave() {
-		isHovered = false;
-
-		setTimeout(() => {
-			if (!isHovered) {
-				animationState = 'idle';
-				peekDirection = null;
-				isBlinking = false;
-			}
-		}, animationDuration);
-	}
+	const animation = new BunAnimation(animationDuration, suspensionTime);
 
 	// For closed eyes, we'll use a horizontal line instead
 	// Left eye center: 24, Right eye center: 24 + 24.77 = 48.77
@@ -82,14 +15,13 @@
 <svg
 	xmlns="http://www.w3.org/2000/svg"
 	viewBox="0 0 80 70"
-	onmouseenter={handleHover}
-	onmouseleave={handleMouseLeave}
+	class="bun-animated"
+	class:bun-peeking={animation.state.isPeeking}
+	onmouseenter={() => animation.handleHover()}
+	onmouseleave={() => animation.handleMouseLeave()}
 	style="
-		transform: {getTransform(peekDirection)};
-		transform-origin: center;
-		transition: transform {animationDuration}ms cubic-bezier(0.34, 1.56, 0.64, 1);
-		filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
-		will-change: transform;
+		--bun-animation-duration: {animationDuration}ms;
+		--bun-suspension-time: {suspensionTime}ms;
 	"
 	{...rest}
 >
@@ -158,7 +90,7 @@
 			d="M25.7 38.8a5.51 5.51 0 1 0-5.5-5.51 5.51 5.51 0 0 0 5.5 5.51Zm24.77 0A5.51 5.51 0 1 0 45 33.29a5.5 5.5 0 0 0 5.47 5.51Z"
 			style="fill-rule:evenodd"
 		/>
-		{#if isBlinking}
+		{#if animation.state.isBlinking}
 			<!-- Closed eyes - horizontal lines -->
 			<path d={leftEyeClosedPath} stroke="#fff" stroke-width="2" stroke-linecap="round" />
 			<path d={rightEyeClosedPath} stroke="#fff" stroke-width="2" stroke-linecap="round" />
@@ -171,15 +103,3 @@
 		{/if}
 	</g>
 </svg>
-
-<style>
-	:global(:root) {
-		--bun-animation-duration: 500ms;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		svg {
-			transition: none !important;
-		}
-	}
-</style>
