@@ -47,6 +47,13 @@ alwaysApply: false
   arr.push({ text: 'new' }); // UI updates, new item is reactive
   ```
   `CORRECT: Access properties directly: obj.nested.value. AVOID: Destructuring reactive proxies: let { value } = obj.nested; (breaks reactivity).`
+
+- **Critical: Why Spreading and Destructuring Break Reactivity:**
+  - **Spreading (`{ ...state }`) breaks reactivity:** The spread operator enumerates properties and creates a NEW plain object with copied values, destroying the proxy chain. Use direct reference: `return { state }` instead of `return { ...state }`.
+  - **Destructuring breaks reactivity:** `const { isPeeking } = state` reads the value once and creates a disconnected plain variable. Never changes when state updates.
+  - **Getters break reactivity:** Returning values via getters `get isPeeking() { return state.isPeeking }` creates disconnected plain values, not reactive references.
+  - **The fix:** Return the proxy object directly and access properties through it: `animation.state.isPeeking` (not `animation.isPeeking` after spreading).
+  - **Key principle:** `$state()` returns a Proxy that intercepts property access/set. This proxy MUST be accessed directly through the object reference to maintain reactivity tracking. Any operation that copies values (spread, destructure, getters) breaks the connection.
 - **Direct Updates:** `CORRECT: Update $state variables directly: count++, arr.push({...}), obj.prop = value. AVOID: Wrapping state in unnecessary custom objects/stores for simple component state.`
 - **Classes:** Use `$state` in class fields. Handle `this` context for methods (use arrow functions or `() => instance.method()` in handlers).
   ```js

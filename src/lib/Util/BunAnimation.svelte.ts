@@ -1,4 +1,4 @@
-type AnimationState =
+type BunAnimationState =
 	| 'idle'
 	| 'initial-blink'
 	| 'peeking'
@@ -12,7 +12,7 @@ export interface BunAnimationReturn {
 		isHovered: boolean;
 		isPeeking: boolean;
 		isBlinking: boolean;
-		animationState: AnimationState;
+		animationState: BunAnimationState;
 	};
 	handleHover: () => Promise<void>;
 	handleMouseLeave: () => void;
@@ -26,7 +26,7 @@ export function createBunAnimation(
 		isHovered: false,
 		isPeeking: false,
 		isBlinking: false,
-		animationState: 'idle' as AnimationState
+		animationState: 'idle' as BunAnimationState
 	});
 
 	async function BunBlink(duration = 100): Promise<void> {
