@@ -6,8 +6,13 @@
     :root{
         --background: oklch(0.178 0 0);
         --foreground: oklch(0.822 0 0);
+        --card-background: oklch(0.21 0 0);
         --shadow-skill-main: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.25);
         --shadow-skill-secondary: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+        /* Card shadow variables - using gray tones for subtle, tasteful elevation */
+        --shadow-card: 0 2px 8px rgba(255, 255, 255, 0.04), 0 1px 3px rgba(255, 255, 255, 0.03);
+        --shadow-card-hover: 0 12px 32px rgba(255, 255, 255, 0.15), 0 4px 12px rgba(255, 255, 255, 0.1);
 
         /* Bun animation variables */
         --bun-animation-duration: 600ms;
@@ -22,8 +27,11 @@
 @theme inline {
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
+	--color-card-background: var(--card-background);
 	--shadow-skill-main: var(--shadow-skill-main);
 	--shadow-skill-secondary: var(--shadow-skill-secondary);
+	--shadow-card: var(--shadow-card);
+	--shadow-card-hover: var(--shadow-card-hover);
 }
 
 /* Bun animation styles */
@@ -42,5 +50,100 @@
 	.bun-animated,
 	.bun-peeking {
 		transition: none !important;
+	}
+}
+
+/* Smooth scrolling */
+html {
+	scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+}
+
+/* Section padding utility */
+.section-padding {
+	padding-top: 3rem;
+	padding-bottom: 3rem;
+}
+
+@media (min-width: 768px) {
+	.section-padding {
+		padding-top: 4rem;
+		padding-bottom: 4rem;
+	}
+}
+
+/* Focus visible styles */
+*:focus-visible {
+	outline: 2px solid var(--foreground);
+	outline-offset: 2px;
+}
+
+/* Smooth transitions for interactive elements */
+button,
+a {
+	transition-property: color, background-color, border-color, transform, opacity;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	transition-duration: 150ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	button,
+	a {
+		transition: none !important;
+	}
+}
+
+/* Card shadow pulse animation */
+@keyframes pulseGlow {
+	0%,
+	100% {
+		box-shadow: 0 2px 8px rgba(255, 255, 255, 0.04), 0 1px 3px rgba(255, 255, 255, 0.03);
+	}
+	50% {
+		box-shadow: 0 2px 8px rgba(255, 255, 255, 0.06), 0 1px 3px rgba(255, 255, 255, 0.04);
+	}
+}
+
+/* Card shadow utilities */
+.shadow-card {
+	box-shadow: var(--shadow-card);
+	animation: pulseGlow 4s ease-in-out infinite;
+	transition: transform 250ms ease-out, box-shadow 250ms ease-out;
+}
+
+.shadow-card:hover {
+	transform: scale(1.02);
+	box-shadow: var(--shadow-card-hover);
+	animation: none;
+}
+
+.shadow-card-hover {
+	box-shadow: var(--shadow-card-hover);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.shadow-card {
+		animation: none;
+	}
+	.shadow-card:hover {
+		transform: none;
+	}
+}
+
+/* Hero Legal Pad Card - completely unique styling */
+.hero-legal-pad {
+	box-shadow: 0 2px 8px rgba(255, 255, 255, 0.04), 0 1px 3px rgba(255, 255, 255, 0.03);
+	transform: rotate(2deg);
+	transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.hero-legal-pad {
+		transform: none;
 	}
 }

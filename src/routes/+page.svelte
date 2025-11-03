@@ -2,25 +2,45 @@
 	import { onMount } from 'svelte';
 	import { getOrderedIcons } from '$lib/icons/orderedIcons.svelte';
 	import SkillCard from '$lib/components/SkillCard.svelte';
-	import AnimationControlPanel from '$lib/components/AnimationControlPanel.svelte';
+	import Navigation from '$lib/components/Navigation.svelte';
+	import HeroSection from '$lib/components/HeroSection.svelte';
+	import AboutSection from '$lib/components/AboutSection.svelte';
+	import FeaturedProjects from '$lib/components/FeaturedProjects.svelte';
+	import ContactSection from '$lib/components/ContactSection.svelte';
 
 	// Randomize on each component mount (page load/navigation)
 	let orderedIcons = $state<Array<{ name: string; component: any }>>([]);
+	let mounted = $state(false);
 
 	onMount(() => {
 		orderedIcons = getOrderedIcons();
+		mounted = true;
 	});
 </script>
 
-<!-- default skills -->
-<div>
-	<h1 class="mb-4 text-4xl font-bold">Skills</h1>
-	<AnimationControlPanel />
-	<div class="flex flex-wrap gap-2">
-		{#key orderedIcons.map((i) => i.name).join(',')}
-			{#each orderedIcons as icon (icon.name)}
-				<SkillCard skill={icon.name} IconComponent={icon.component} variant="1" />
-			{/each}
-		{/key}
+<Navigation />
+
+<HeroSection />
+
+<AboutSection />
+
+<section id="skills" class="section-padding mx-auto max-w-6xl px-4 py-20">
+	<div
+		class="transition-opacity duration-1000 {mounted ? 'opacity-100' : 'opacity-0'}"
+		style="transition-delay: 350ms"
+	>
+		<h2 class="mb-4 text-3xl font-bold md:text-4xl">Skills</h2>
+		<p class="mb-8 text-lg text-foreground/80">Technologies and tools I work with</p>
+		<div class="flex flex-wrap gap-2">
+			{#key orderedIcons.map((i) => i.name).join(',')}
+				{#each orderedIcons as icon (icon.name)}
+					<SkillCard skill={icon.name} IconComponent={icon.component} variant="1" />
+				{/each}
+			{/key}
+		</div>
 	</div>
-</div>
+</section>
+
+<FeaturedProjects />
+
+<ContactSection />
