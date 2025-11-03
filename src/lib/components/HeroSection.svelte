@@ -16,9 +16,9 @@
 		style="transition-delay: 200ms"
 	>
 		<h1 class="mb-6 text-4xl leading-tight font-bold md:text-5xl lg:text-6xl">
-			<span class="text-foreground">I'm building</span>
+			<span class="text-foreground">I ship products</span>
 			<br />
-			<span class="text-foreground">full-stack applications.</span>
+			<span class="text-foreground">that users love.</span>
 		</h1>
 
 		<div class="space-y-4 text-lg leading-relaxed text-foreground/90 md:text-xl">

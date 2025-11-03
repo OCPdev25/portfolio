@@ -29,8 +29,8 @@
 		class="transition-opacity duration-1000 {mounted ? 'opacity-100' : 'opacity-0'}"
 		style="transition-delay: 350ms"
 	>
-		<h2 class="mb-4 text-3xl font-bold md:text-4xl">Skills</h2>
-		<p class="mb-8 text-lg text-foreground/80">Technologies and tools I work with</p>
+		<h2 class="mb-4 text-3xl font-bold md:text-4xl">I build with modern tools</h2>
+		<p class="mb-8 text-lg text-foreground/80">Tech stack I ship with</p>
 		<div class="flex flex-wrap gap-2">
 			{#key orderedIcons.map((i) => i.name).join(',')}
 				{#each orderedIcons as icon (icon.name)}

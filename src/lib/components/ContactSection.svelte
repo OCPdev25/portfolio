@@ -54,11 +54,8 @@
 		class="transition-opacity duration-1000 {mounted ? 'opacity-100' : 'opacity-0'}"
 		style="transition-delay: 500ms"
 	>
-		<h2 class="mb-4 text-3xl font-bold md:text-4xl">Get In Touch</h2>
-		<p class="mb-12 text-lg text-foreground/80">
-			I'm always open to discussing new opportunities and interesting projects. Feel free to reach
-			out!
-		</p>
+		<h2 class="mb-4 text-3xl font-bold md:text-4xl">Let's build something together</h2>
+		<p class="mb-12 text-lg text-foreground/80">Have a project in mind? Let's talk.</p>
 
 		<div class="grid gap-12 md:grid-cols-2">
 			<!-- Contact Form -->

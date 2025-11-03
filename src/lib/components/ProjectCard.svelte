@@ -15,7 +15,7 @@
 	class="group flex flex-col overflow-hidden rounded-lg bg-card-background shadow-card transition-all hover:shadow-card-hover"
 >
 	<div class="flex flex-1 flex-col p-6">
-		<h3 class="mb-2 text-2xl font-bold text-foreground">{project.title}</h3>
+		<h3 class="mb-3 text-xl font-bold text-foreground">{project.title}</h3>
 		<p class="mb-4 flex-1 text-foreground/80">{project.description}</p>
 		<div class="mb-4 flex flex-wrap gap-2">
 			{#each project.techStack as tech}
