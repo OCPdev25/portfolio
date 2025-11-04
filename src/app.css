@@ -7,6 +7,10 @@
         --background: oklch(0.178 0 0);
         --foreground: oklch(0.822 0 0);
         --card-background: oklch(0.21 0 0);
+        --text-sub: #a7a9be;
+        --text-sub-100: #94a1b2;
+        --text-sub-200: #72757e;
+        --text-sub-300: #475d5b;
         --shadow-skill-main: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.25);
         --shadow-skill-secondary: 0 1px 3px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
@@ -32,6 +36,10 @@
 	--shadow-skill-secondary: var(--shadow-skill-secondary);
 	--shadow-card: var(--shadow-card);
 	--shadow-card-hover: var(--shadow-card-hover);
+	--color-sub: var(--text-sub);
+	--color-sub-100: var(--text-sub-100);
+	--color-sub-200: var(--text-sub-200);
+	--color-sub-300: var(--text-sub-300);
 }
 
 /* Bun animation styles */

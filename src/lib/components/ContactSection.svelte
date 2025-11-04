@@ -54,14 +54,14 @@
 		class="transition-opacity duration-1000 {mounted ? 'opacity-100' : 'opacity-0'}"
 		style="transition-delay: 500ms"
 	>
-		<h2 class="mb-4 text-3xl font-bold md:text-4xl">Let's build something together</h2>
-		<p class="mb-12 text-lg text-foreground/80">Have a project in mind? Let's talk.</p>
+		<h2 class="mb-4 text-3xl font-bold text-sub md:text-4xl">Let's build something together</h2>
+		<p class="mb-12 text-lg text-sub-100">Have a project in mind? Let's talk.</p>
 
 		<div class="grid gap-12 md:grid-cols-2">
 			<!-- Contact Form -->
 			<form onsubmit={handleSubmit} class="space-y-6">
 				<div>
-					<label for="name" class="mb-2 block text-sm font-medium text-foreground"> Name </label>
+					<label for="name" class="mb-2 block text-sm font-medium text-sub-300"> Name </label>
 					<input
 						id="name"
 						type="text"
@@ -72,7 +72,7 @@
 					/>
 				</div>
 				<div>
-					<label for="email" class="mb-2 block text-sm font-medium text-foreground"> Email </label>
+					<label for="email" class="mb-2 block text-sm font-medium text-sub-200"> Email </label>
 					<input
 						id="email"
 						type="email"
@@ -83,9 +83,7 @@
 					/>
 				</div>
 				<div>
-					<label for="message" class="mb-2 block text-sm font-medium text-foreground">
-						Message
-					</label>
+					<label for="message" class="mb-2 block text-sm font-medium text-sub"> Message </label>
 					<textarea
 						id="message"
 						bind:value={formData.message}
