@@ -9,6 +9,7 @@
 	import ContactSection from '$lib/components/ContactSection.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import ProfilePicture from '$lib/components/ProfilePicture.svelte';
+	import propImage from '$lib/assets/prop.jpg';
 
 	// Randomize on each component mount (page load/navigation)
 	let orderedIcons = $state<Array<{ name: string; component: any }>>([]);
@@ -21,7 +22,9 @@
 </script>
 
 <Navigation />
-<ProfilePicture />
+<div class="flex justify-center">
+	<ProfilePicture imageSrc={propImage} alt="Profile picture" />
+</div>
 
 <HeroSection />
 
