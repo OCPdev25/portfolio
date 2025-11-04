@@ -20,7 +20,7 @@
 	let isBannerOpen = $state(false);
 	let closeTimer: ReturnType<typeof setTimeout> | null = null;
 
-	function handleDotClick() {
+	function handleDotHover() {
 		isBannerOpen = true;
 
 		// Clear existing timer if any
@@ -74,7 +74,7 @@
 				<button
 					type="button"
 					class="collab-dot"
-					onclick={handleDotClick}
+					onmouseenter={handleDotHover}
 					aria-label="Open collaboration status"
 				>
 					<span class="collab-dot-pulse"></span>

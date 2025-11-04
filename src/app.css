@@ -240,7 +240,7 @@ a {
 @keyframes bannerSlideIn {
 	from {
 		opacity: 0;
-		transform: translateX(-10px) scale(0.95);
+		transform: translateX(-20px) scale(0.95);
 	}
 	to {
 		opacity: 1;
@@ -255,7 +255,7 @@ a {
 	}
 	to {
 		opacity: 0;
-		transform: translateX(-10px) scale(0.95);
+		transform: translateX(-20px) scale(0.95);
 	}
 }
 
@@ -290,7 +290,7 @@ a {
 .collab-banner {
 	position: absolute;
 	top: 0.5rem;
-	right: 1.25rem;
+	left: calc(100% - 0.5rem - 10px - 0.5rem);
 	background-color: var(--card-background);
 	color: var(--foreground);
 	padding: 0.5rem 0.75rem;
@@ -302,6 +302,7 @@ a {
 	box-shadow: var(--shadow-card-hover);
 	border: 1px solid var(--foreground);
 	animation: bannerSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+	transform-origin: left center;
 }
 
 .collab-banner.closing {
@@ -312,11 +313,11 @@ a {
 	.collab-dot-pulse {
 		animation: none;
 	}
-	
+
 	.collab-banner {
 		animation: none;
 	}
-	
+
 	.collab-banner.closing {
 		animation: none;
 	}
