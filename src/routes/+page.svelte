@@ -22,9 +22,8 @@
 </script>
 
 <Navigation />
-<div class="flex justify-center">
-	<ProfilePicture imageSrc={propImage} alt="Profile picture" />
-</div>
+
+<ProfilePicture imageSrc={propImage} alt="Profile picture" />
 
 <HeroSection />
 
