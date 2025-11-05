@@ -10,6 +10,22 @@
 	});
 
 	const paperUnroll = $derived(hoverProgress.current);
+	
+	// Wave activation logic
+	const isFullyUnrolled = $derived(paperUnroll >= 0.95);
+	let waveActive = $state(false);
+
+	$effect(() => {
+		if (isFullyUnrolled && hovered) {
+			waveActive = true;
+		} else if (!hovered) {
+			waveActive = false;
+		}
+	});
+
+	// Number of slices for the flag wave effect
+	const NUM_SLICES = 14;
+	const slices = Array.from({ length: NUM_SLICES }, (_, i) => i);
 </script>
 
 <div
@@ -20,6 +36,16 @@
 	onmouseleave={() => (hovered = false)}
 >
 	<span class="cylinder"></span>
+	
+	<!-- Paper slices for wave effect -->
+	<div class="paper-container" class:wave-active={waveActive}>
+		{#each slices as sliceIndex}
+			<div 
+				class="paper-slice" 
+				style={`--slice-index: ${sliceIndex}; --slice-delay: ${sliceIndex * 80}ms;`}
+			></div>
+		{/each}
+	</div>
 </div>
 
 <style>
@@ -144,29 +170,38 @@
 		bottom: 0;
 	}
 
-	/* Paper */
-	.paper-roll::before,
-	.paper-roll::after {
-		content: '';
+	/* Paper Container */
+	.paper-container {
 		position: absolute;
+		left: calc(var(--paper-roll-left-offset) + var(--paper-offset-from-cylinder));
 		top: var(--paper-roll-top-offset);
+		width: calc(var(--paper-width-rolled) + var(--paper-unroll, 0) * var(--paper-unroll-max-width));
 		height: var(--paper-roll-height);
+		display: flex;
+		transform: translateY(calc(var(--paper-unroll, 0) * -0.2vmin));
+		transform-style: preserve-3d;
+		perspective: 1000px;
 		pointer-events: none;
+		z-index: var(--z-paper);
 	}
 
-	.paper-roll::before {
-		left: calc(var(--paper-roll-left-offset) + var(--paper-offset-from-cylinder));
-		width: calc(var(--paper-width-rolled) + var(--paper-unroll, 0) * var(--paper-unroll-max-width));
+	/* Individual Paper Slices */
+	.paper-slice {
+		position: relative;
+		width: calc(100% / 14);
+		height: 100%;
 		background: linear-gradient(
 			to right,
 			var(--color-paper) 0%,
 			#f9eddd 50%,
 			var(--color-paper) 100%
 		);
-		transform: translateY(calc(var(--paper-unroll, 0) * -0.2vmin));
+		background-size: calc(100% * 14) 100%;
+		background-position-x: calc(var(--slice-index) * -100%);
+		transform-style: preserve-3d;
+		transform-origin: left center;
 		box-shadow: calc(var(--paper-unroll, 0) * 0.4vmin) calc(var(--paper-unroll, 0) * 0.3vmin)
-			calc(var(--paper-unroll, 0) * 0.8vmin) rgba(0, 0, 0, calc(var(--paper-unroll, 0) * 0.2));
-		z-index: var(--z-paper);
+			calc(var(--paper-unroll, 0) * 0.8vmin) rgba(0, 0, 0, calc(var(--paper-unroll, 0) * 0.15));
 		clip-path: polygon(
 			0% 0%,
 			calc(100% - var(--paper-unroll, 0) * 1% - var(--paper-clip-wave-small)) 0%,
@@ -183,5 +218,24 @@
 			calc(100% - var(--paper-unroll, 0) * 1% - var(--paper-clip-wave-medium)) 100%,
 			0% 100%
 		);
+	}
+
+	/* Wave Animation */
+	.wave-active .paper-slice {
+		animation: flag-wave 2s ease-in-out infinite alternate;
+		animation-delay: var(--slice-delay);
+		animation-play-state: running;
+	}
+
+	@keyframes flag-wave {
+		0% {
+			transform: rotateY(15deg) rotateX(2deg) translateZ(0.3vmin);
+		}
+		50% {
+			transform: rotateY(-5deg) rotateX(-3deg) translateZ(-0.2vmin);
+		}
+		100% {
+			transform: rotateY(-10deg) rotateX(2deg) translateZ(0.5vmin);
+		}
 	}
 </style>
