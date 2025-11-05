@@ -1,24 +1,45 @@
 <script lang="ts">
+	import { tweened } from 'svelte/motion';
+	import { cubicOut } from 'svelte/easing';
+
 	interface Props {
 		/** External control: bind:checked to this prop to control the toggle state */
 		checked?: boolean;
 		/** Callback function called when toggle state changes */
 		onChange?: (checked: boolean) => void;
+		/** Animation duration in milliseconds */
+		duration?: number;
+		/** Easing function for animation */
+		easing?: (t: number) => number;
 	}
 
-	let { checked = $bindable(false), onChange }: Props = $props();
+	let { checked = $bindable(false), onChange, duration = 500, easing = cubicOut }: Props = $props();
 
 	let checkboxId = `paper-roll-${Math.random().toString(36).substring(2, 9)}`;
 
-	function handleChange(event: Event) {
-		const target = event.target as HTMLInputElement;
-		const newValue = target.checked;
-		checked = newValue;
-		onChange?.(newValue);
+	// Tweened stores for smooth animations - easy to tweak!
+	const paperOpacity = tweened(0, { duration, easing });
+	const paperTransformX = tweened(-2, { duration, easing }); // in vmin units
+
+	// Update tweened stores when checked state changes
+	$effect(() => {
+		paperOpacity.set(checked ? 1 : 0);
+		paperTransformX.set(checked ? 0 : -2);
+	});
+
+	// Derive transform string from tweened value
+	let paperTransform = $derived(`translateX(${paperTransformX}vmin)`);
+
+	function handleCheckedChange() {
+		onChange?.(checked);
 	}
 </script>
 
-<div class="toggle">
+<div
+	class="toggle"
+	class:checked
+	style="--paper-opacity: {$paperOpacity}; --paper-transform: {paperTransform}"
+>
 	<input
 		type="checkbox"
 		id={checkboxId}
@@ -26,8 +47,8 @@
 		role="switch"
 		aria-checked={checked}
 		aria-label="Toggle switch"
-		{checked}
-		onchange={handleChange}
+		bind:checked
+		onchange={handleCheckedChange}
 	/>
 	<label for={checkboxId} class="btn">
 		<span class="thumb"></span>
@@ -92,7 +113,7 @@
 	}
 
 	/* Paper Roll Effect - Left side */
-	/* Hidden by default, shown when checked */
+	/* Controlled by Svelte tweened stores via CSS variables - smooth animations! */
 	.toggle::before {
 		content: '';
 		position: absolute;
@@ -102,10 +123,10 @@
 		height: var(--paper-roll-height);
 		background-color: var(--color-white);
 		clip-path: polygon(0% 0%, 18% 8, 2% 39%, 21% 80%, 2% 90%, 15% 105%, 100% 100%, 100% 0%);
-		opacity: 0;
-		transform: translateX(-2vmin);
-		transition: var(--transition);
+		opacity: var(--paper-opacity, 0);
+		transform: var(--paper-transform, translateX(-2vmin));
 		pointer-events: none;
+		/* No transition needed - Svelte tweened handles it */
 	}
 
 	.toggle::after {
@@ -120,17 +141,10 @@
 			var(--color-gray-transparent),
 			var(--color-white) calc(1px + 0.8vmin) calc(0.8vmin + 2px)
 		);
-		opacity: 0;
-		transform: translateX(-2vmin);
-		transition: var(--transition);
+		opacity: var(--paper-opacity, 0);
+		transform: var(--paper-transform, translateX(-2vmin));
 		pointer-events: none;
-	}
-
-	/* Show paper roll when checked */
-	.toggle:has(.checkbox:checked)::before,
-	.toggle:has(.checkbox:checked)::after {
-		opacity: 1;
-		transform: translateX(0);
+		/* No transition needed - Svelte tweened handles it */
 	}
 
 	/* Checkbox */
