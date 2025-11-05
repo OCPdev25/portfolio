@@ -1,84 +1,68 @@
 <script lang="ts">
-	import { tweened } from 'svelte/motion';
+	import { Tween } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 
-	interface Props {
-		/** External control: bind:checked to this prop to control the toggle state */
-		checked?: boolean;
-		/** Callback function called when toggle state changes */
-		onChange?: (checked: boolean) => void;
-		/** Animation duration in milliseconds */
-		duration?: number;
-		/** Easing function for animation */
-		easing?: (t: number) => number;
-	}
+	let { checked = $bindable(false) } = $props();
+	let hovered = $state(false);
 
-	let { checked = $bindable(false), onChange, duration = 500, easing = cubicOut }: Props = $props();
-
-	let checkboxId = `paper-roll-${Math.random().toString(36).substring(2, 9)}`;
-
-	// Tweened stores for smooth animations - easy to tweak!
-	const paperOpacity = tweened(0, { duration, easing });
-	const paperTransformX = tweened(-2, { duration, easing }); // in vmin units
-
-	// Update tweened stores when checked state changes
-	$effect(() => {
-		paperOpacity.set(checked ? 1 : 0);
-		paperTransformX.set(checked ? 0 : -2);
+	const toggleProgress = Tween.of(() => (checked ? 1 : 0), {
+		duration: 220,
+		easing: cubicOut
 	});
 
-	// Derive transform string from tweened value
-	let paperTransform = $derived(`translateX(${paperTransformX}vmin)`);
+	const hoverProgress = Tween.of(() => (hovered ? 1 : 0), {
+		duration: 180,
+		easing: cubicOut
+	});
 
-	function handleCheckedChange() {
-		onChange?.(checked);
+	const progress = $derived(toggleProgress.current);
+	const hoverStrength = $derived(hoverProgress.current);
+
+	function setHover(state: boolean) {
+		hovered = state;
 	}
 </script>
 
-<div
+<label
 	class="toggle"
-	class:checked
-	style="--paper-opacity: {$paperOpacity}; --paper-transform: {paperTransform}"
+	data-checked={checked}
+	style={`--thumb-progress:${progress}; --hover-strength:${hoverStrength};`}
+	onmouseenter={() => setHover(true)}
+	onmouseleave={() => setHover(false)}
+	onfocusin={() => setHover(true)}
+	onfocusout={() => setHover(false)}
 >
 	<input
 		type="checkbox"
-		id={checkboxId}
 		class="checkbox"
 		role="switch"
 		aria-checked={checked}
-		aria-label="Toggle switch"
-		bind:checked
-		onchange={handleCheckedChange}
+		bind:checked={checked}
 	/>
-	<label for={checkboxId} class="btn">
-		<span class="thumb"></span>
-	</label>
-</div>
+	<span class="surface">
+		<span class="label on" aria-hidden="true">ON</span>
+		<span class="label off" aria-hidden="true">OFF</span>
+		<span class="thumb" aria-hidden="true">
+			<span class="highlight"></span>
+		</span>
+	</span>
+</label>
 
 <style>
-	/* CSS Variables */
 	:root {
 		--sz: 10vmin;
-		--transition: all 0.5s ease;
-
-		/* Calculated dimensions */
+		--transition-time: 0.4s;
 		--toggle-width: calc(var(--sz) * 4);
 		--toggle-height: calc(var(--sz) * 4);
 		--btn-height: calc(var(--sz) * 2);
-		--thumb-width: calc(var(--sz) * 1.67); /* 2 - 1/3 */
-		--thumb-height: calc(var(--sz) * 1.97); /* 2 - 1/30 */
-
-		/* Positioning offsets */
+		--thumb-width: calc(var(--sz) * 1.67);
+		--thumb-height: calc(var(--sz) * 1.97);
+		--thumb-padding: calc(var(--sz) * 0.28);
 		--paper-roll-top: 4vmin;
 		--paper-roll-left: -1.9vmin;
 		--paper-roll-width: 2vmin;
 		--paper-roll-line-width: 0.2vmin;
 		--paper-roll-height: calc(100% - var(--paper-roll-top) * 2);
-		--thumb-top-offset: calc(var(--sz) * 0.033); /* 1/10 - 1/15 */
-		--thumb-left-offset: calc(var(--sz) / 10 + var(--sz) * -0.25); /* Combined left offset */
-		--thumb-left-checked-offset: calc(var(--sz) * 0.075);
-
-		/* Colors */
 		--color-on: #9acd32;
 		--color-off: #ffc;
 		--color-white: #fff;
@@ -86,153 +70,159 @@
 		--color-gray: #ccc;
 		--color-gray-transparent: #ccc6;
 		--color-shadow: #d3d5de80;
-
-		/* Thumb background gradients */
 		--thumb-gradient: repeating-conic-gradient(
 			from -90deg at 0.15vmin 90%,
 			var(--color-shadow) 0 25%,
 			var(--color-white-full) 0 100%
 		);
-
-		/* Thumb background positions */
 		--thumb-bg-position-default: -90% 0, 5% 0, 185% 0, 0 0;
 		--thumb-bg-position-checked: 150% 0, 150% 0, 285% 0, 0 0;
 		--thumb-bg-size: 50% 1vmin, 50% 1vmin, 50% 1vmin, 100% 100%;
 	}
 
-	/* Toggle Container */
 	.toggle {
 		position: relative;
-		width: var(--toggle-width);
-		height: var(--toggle-height);
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+		width: var(--toggle-width);
+		height: var(--toggle-height);
 		filter: drop-shadow(-2px 2px 4px hsla(160, 23%, 97%, 0.5));
 		box-sizing: border-box;
+		cursor: pointer;
+		user-select: none;
 	}
 
-	/* Paper Roll Effect - Left side */
-	/* Controlled by Svelte tweened stores via CSS variables - smooth animations! */
-	.toggle::before {
-		content: '';
-		position: absolute;
-		top: var(--paper-roll-top);
-		left: var(--paper-roll-left);
-		width: var(--paper-roll-width);
-		height: var(--paper-roll-height);
-		background-color: var(--color-white);
-		clip-path: polygon(0% 0%, 18% 8, 2% 39%, 21% 80%, 2% 90%, 15% 105%, 100% 100%, 100% 0%);
-		opacity: var(--paper-opacity, 0);
-		transform: var(--paper-transform, translateX(-2vmin));
-		pointer-events: none;
-		/* No transition needed - Svelte tweened handles it */
-	}
-
+	.toggle::before,
 	.toggle::after {
 		content: '';
 		position: absolute;
 		top: var(--paper-roll-top);
 		left: var(--paper-roll-left);
-		width: var(--paper-roll-line-width);
 		height: var(--paper-roll-height);
+		pointer-events: none;
+		transition: var(--transition-time);
+	}
+
+	.toggle::before {
+		width: var(--paper-roll-width);
+		background-color: var(--color-white);
+		clip-path: polygon(0% 0%, 18% 8%, 2% 39%, 21% 80%, 2% 90%, 15% 105%, 100% 100%, 100% 0%);
+	}
+
+	.toggle::after {
+		width: var(--paper-roll-line-width);
 		background: repeating-linear-gradient(
 			180deg,
 			var(--color-gray-transparent),
 			var(--color-white) calc(1px + 0.8vmin) calc(0.8vmin + 2px)
 		);
-		opacity: var(--paper-opacity, 0);
-		transform: var(--paper-transform, translateX(-2vmin));
-		pointer-events: none;
-		/* No transition needed - Svelte tweened handles it */
 	}
 
-	/* Checkbox */
 	.checkbox {
-		display: none;
+		position: absolute;
+		opacity: 0;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		clip-path: inset(50%);
+		white-space: nowrap;
+		border: 0;
 	}
 
-	/* Toggle Button */
-	.btn {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: var(--toggle-width);
+	.surface {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		width: 100%;
 		height: var(--btn-height);
+		padding: 0 var(--thumb-padding);
+		box-sizing: border-box;
+		border-radius: calc(var(--btn-height) / 2);
 		background: linear-gradient(180deg, var(--color-white) 30%, var(--color-gray) 30%);
-		background-size: 100% 200%;
 		background-repeat: no-repeat;
 		background-position: 0 var(--paper-roll-top);
-		transition: var(--transition);
-		box-sizing: border-box;
+		background-size: 100% 200%;
+		transition: background-size var(--transition-time);
+		box-shadow: 0 calc(var(--hover-strength, 0) * var(--sz) * 0.1)
+			calc(var(--hover-strength, 0) * var(--sz) * 0.4) 0 var(--color-shadow);
 	}
 
-	.checkbox:checked + .btn {
+	.toggle[data-checked='true'] .surface {
 		background-size: 260% var(--paper-roll-height);
 	}
 
-	/* ON/OFF Labels */
-	.btn::before,
-	.btn::after {
-		content: 'ON';
-		position: absolute;
+	.checkbox:focus-visible + .surface {
+		outline: 0.35vmin solid rgba(0, 0, 0, 0.2);
+		outline-offset: 0.3vmin;
+	}
+
+	.label {
+		position: relative;
 		width: 50%;
-		color: var(--color-on);
-		text-align: center;
-		height: 100%;
-		line-height: 23.5vmin;
-		font-size: 8vmin;
 		font-family: Arial, Helvetica, sans-serif;
-		transform: scaleY(1.1);
-		padding: 0 2vmin;
+		font-size: 8vmin;
+		line-height: 23.5vmin;
 		text-shadow:
 			0 1px 2px #0008,
 			0 -2px 1px #eee;
-		transition: var(--transition);
+		transform: scaleY(1.1);
+		pointer-events: none;
+		transition: opacity var(--transition-time);
 	}
 
-	.btn::after {
-		content: 'OFF';
-		right: 0.5vmin;
-		padding: 0;
-		text-align: right;
+	.label.on {
+		color: var(--color-on);
+		text-align: left;
+		opacity: calc(0.4 + 0.6 * var(--thumb-progress, 0));
+	}
+
+	.label.off {
 		color: var(--color-off);
+		text-align: right;
+		opacity: calc(1 - 0.6 * var(--thumb-progress, 0));
 		text-shadow:
 			0 -2px 2px #ffffff87,
 			0 1px 2px #222;
 	}
 
-	/* Thumb (Toggle Handle) */
 	.thumb {
 		position: absolute;
+		top: 50%;
+		left: var(--thumb-padding);
 		width: var(--thumb-width);
 		height: var(--thumb-height);
-		top: var(--thumb-top-offset);
-		left: var(--thumb-left-offset);
-		background: var(--thumb-gradient), var(--thumb-gradient), var(--thumb-gradient);
+		display: grid;
+		place-items: center;
 		border-radius: 50% / 15%;
-		box-shadow: calc(var(--sz) * -0.35) calc(var(--sz) * 0.35) calc(var(--sz) * 30) 0
-			var(--color-white-full);
-		cursor: pointer;
-		z-index: 1;
-		overflow: hidden;
+		background: var(--thumb-gradient), var(--thumb-gradient), var(--thumb-gradient);
 		background-repeat: repeat-x, repeat-y, repeat-y, no-repeat;
 		background-position: var(--thumb-bg-position-default);
 		background-size: var(--thumb-bg-size);
-		transition: var(--transition);
+		box-shadow: calc(var(--sz) * -0.35) calc(var(--sz) * 0.35) calc(var(--sz) * 30) 0 var(--color-white-full);
+		transform: translate(
+			calc(
+				var(--thumb-progress, 0) *
+					(var(--toggle-width) - var(--thumb-width) - var(--thumb-padding) * 2)
+			),
+			-50%
+		)
+			scale(calc(1 + var(--hover-strength, 0) * 0.04));
+		transition: background-position var(--transition-time);
+		pointer-events: none;
+		z-index: 1;
 	}
 
-	.checkbox:checked + .btn .thumb {
-		left: calc(100% - var(--thumb-width) - var(--sz) / 10 + var(--thumb-left-checked-offset));
+	.toggle[data-checked='true'] .thumb {
 		background-position: var(--thumb-bg-position-checked);
 	}
 
-	/* Thumb Highlight */
-	.thumb::before {
-		content: '';
-		position: absolute;
+	.highlight {
 		width: 100%;
 		height: 25%;
+		border-radius: 100%;
 		background:
 			radial-gradient(
 				ellipse at 50% 50%,
@@ -240,7 +230,7 @@
 				var(--color-white) calc(2.75vmin + 2px) 100%
 			),
 			var(--color-shadow);
-		border-radius: 100%;
-		transition: var(--transition);
+		opacity: calc(0.7 + var(--hover-strength, 0) * 0.3);
+		transition: opacity var(--transition-time);
 	}
 </style>
