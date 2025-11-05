@@ -26,9 +26,10 @@
 
 <ProfilePicture imageSrc={propImage} alt="Profile picture" />
 
-<PaperRoll />
-
 <HeroSection />
+<div class="box-border border-2 border-red-500">
+	<PaperRoll />
+</div>
 
 <AboutSection />
 
