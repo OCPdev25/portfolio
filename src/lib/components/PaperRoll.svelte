@@ -40,12 +40,12 @@
 		--lines-offset-from-cylinder: calc(var(--cylinder-width) * 0.5);
 
 		/* Animation */
-		--paper-unroll-max-width: 35vmin;
+		--paper-unroll-max-width: 28vmin;
 		--paper-unroll-width-multiplier: 0.5vmin;
 		--paper-clip-wave-base: 0%;
 		--paper-clip-wave-small: 2%;
-		--paper-clip-wave-medium: 5%;
-		--paper-clip-wave-large: 8%;
+		--paper-clip-wave-medium: 4%;
+		--paper-clip-wave-large: 6%;
 
 		/* Colors */
 		--color-paper: #f5e6d3;
@@ -163,21 +163,24 @@
 			#f9eddd 50%,
 			var(--color-paper) 100%
 		);
-		transform: translateY(calc(var(--paper-unroll, 0) * -0.4vmin))
-			rotateZ(calc(var(--paper-unroll, 0) * -1deg));
+		transform: translateY(calc(var(--paper-unroll, 0) * -0.2vmin));
 		box-shadow: calc(var(--paper-unroll, 0) * 0.4vmin) calc(var(--paper-unroll, 0) * 0.3vmin)
 			calc(var(--paper-unroll, 0) * 0.8vmin) rgba(0, 0, 0, calc(var(--paper-unroll, 0) * 0.2));
 		z-index: var(--z-paper);
 		clip-path: polygon(
 			0% 0%,
-			calc(100% - var(--paper-unroll, 0) * var(--paper-clip-wave-large)) 0%,
-			calc(100% - var(--paper-unroll, 0) * 3% - var(--paper-clip-wave-medium)) 2%,
-			calc(100% - var(--paper-unroll, 0) * 2% - var(--paper-clip-wave-small)) 15%,
-			calc(100% - var(--paper-unroll, 0) * 4% - var(--paper-clip-wave-large)) 40%,
-			calc(100% - var(--paper-unroll, 0) * 2% - var(--paper-clip-wave-medium)) 65%,
-			calc(100% - var(--paper-unroll, 0) * 3% - var(--paper-clip-wave-large)) 85%,
-			calc(100% - var(--paper-unroll, 0) * 2% - var(--paper-clip-wave-medium)) 98%,
-			100% 100%,
+			calc(100% - var(--paper-unroll, 0) * 1% - var(--paper-clip-wave-small)) 0%,
+			calc(100% - var(--paper-unroll, 0) * 2% - var(--paper-clip-wave-large)) 8%,
+			calc(100% - var(--paper-unroll, 0) * 1.5% - var(--paper-clip-wave-medium)) 16%,
+			calc(100% - var(--paper-unroll, 0) * 1% - var(--paper-clip-wave-small)) 24%,
+			calc(100% - var(--paper-unroll, 0) * 2.5% - var(--paper-clip-wave-large)) 32%,
+			calc(100% - var(--paper-unroll, 0) * 1.5% - var(--paper-clip-wave-medium)) 42%,
+			calc(100% - var(--paper-unroll, 0) * 2% - var(--paper-clip-wave-large)) 52%,
+			calc(100% - var(--paper-unroll, 0) * 1% - var(--paper-clip-wave-small)) 62%,
+			calc(100% - var(--paper-unroll, 0) * 2% - var(--paper-clip-wave-medium)) 72%,
+			calc(100% - var(--paper-unroll, 0) * 2.5% - var(--paper-clip-wave-large)) 82%,
+			calc(100% - var(--paper-unroll, 0) * 1.5% - var(--paper-clip-wave-small)) 92%,
+			calc(100% - var(--paper-unroll, 0) * 1% - var(--paper-clip-wave-medium)) 100%,
 			0% 100%
 		);
 	}
