@@ -259,22 +259,4 @@
 	.collab-banner.closing {
 		animation: bannerSlideOut 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.collab-dot {
-			animation: none;
-		}
-
-		.collab-dot-pulse {
-			animation: none;
-		}
-
-		.collab-banner {
-			animation: none;
-		}
-
-		.collab-banner.closing {
-			animation: none;
-		}
-	}
 </style>

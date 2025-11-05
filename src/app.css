@@ -149,9 +149,3 @@ a {
 	transform: rotate(2deg);
 	transform-origin: center;
 }
-
-@media (prefers-reduced-motion: reduce) {
-	.hero-legal-pad {
-		transform: none;
-	}
-}
