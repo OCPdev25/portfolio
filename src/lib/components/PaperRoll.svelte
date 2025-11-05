@@ -1,78 +1,130 @@
 <script lang="ts">
+	let checkboxId = `paper-roll-${Math.random().toString(36).substring(2, 9)}`;
 </script>
 
 <div class="toggle">
-	<input type="checkbox" id="btn" />
-	<label for="btn" class="btn">
+	<input type="checkbox" id={checkboxId} class="checkbox" />
+	<label for={checkboxId} class="btn">
 		<span class="thumb"></span>
 	</label>
 </div>
 
 <style>
+	/* CSS Variables */
 	:root {
 		--sz: 10vmin;
-		--tr: all 0.5s ease 0;
+		--transition: all 0.5s ease;
+
+		/* Calculated dimensions */
+		--toggle-width: calc(var(--sz) * 4);
+		--toggle-height: calc(var(--sz) * 4);
+		--btn-height: calc(var(--sz) * 2);
+		--thumb-width: calc(var(--sz) * 1.67); /* 2 - 1/3 */
+		--thumb-height: calc(var(--sz) * 1.97); /* 2 - 1/30 */
+
+		/* Positioning offsets */
+		--paper-roll-top: 4vmin;
+		--paper-roll-left: -1.9vmin;
+		--paper-roll-width: 2vmin;
+		--paper-roll-line-width: 0.2vmin;
+		--paper-roll-height: calc(100% - var(--paper-roll-top) * 2);
+		--thumb-top-offset: calc(var(--sz) * 0.033); /* 1/10 - 1/15 */
+		--thumb-left-offset: calc(var(--sz) / 10 + var(--sz) * -0.25); /* Combined left offset */
+		--thumb-left-checked-offset: calc(var(--sz) * 0.075);
+
+		/* Colors */
+		--color-on: #9acd32;
+		--color-off: #ffc;
+		--color-white: #fff;
+		--color-white-full: #ffff;
+		--color-gray: #ccc;
+		--color-gray-transparent: #ccc6;
+		--color-shadow: #d3d5de80;
+
+		/* Thumb background gradients */
+		--thumb-gradient: repeating-conic-gradient(
+			from -90deg at 0.15vmin 90%,
+			var(--color-shadow) 0 25%,
+			var(--color-white-full) 0 100%
+		);
+
+		/* Thumb background positions */
+		--thumb-bg-position-default: -90% 0, 5% 0, 185% 0, 0 0;
+		--thumb-bg-position-checked: 150% 0, 150% 0, 285% 0, 0 0;
+		--thumb-bg-size: 50% 1vmin, 50% 1vmin, 50% 1vmin, 100% 100%;
 	}
-	* {
-		transition: var(--tr);
-		box-sizing: border-box;
-	}
+
+	/* Toggle Container */
 	.toggle {
 		position: relative;
-		width: calc(var(--sz) * 4);
-		height: calc(var(--sz) * 4);
+		width: var(--toggle-width);
+		height: var(--toggle-height);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		filter: drop-shadow(-2px 2px 4px hsla(160, 23%, 97%, 0.5));
+		box-sizing: border-box;
 	}
+
+	/* Paper Roll Effect - Left side */
 	.toggle::before {
 		content: '';
 		position: absolute;
-		top: 4vmin;
-		left: -1.9vmin;
-		width: 2vmin;
-		height: calc(100% - 4vmin);
-		background-color: #fff;
+		top: var(--paper-roll-top);
+		left: var(--paper-roll-left);
+		width: var(--paper-roll-width);
+		height: var(--paper-roll-height);
+		background-color: var(--color-white);
 		clip-path: polygon(0% 0%, 18% 8, 2% 39%, 21% 80%, 2% 90%, 15% 105%, 100% 100%, 100% 0%);
+		transition: var(--transition);
 	}
+
 	.toggle::after {
 		content: '';
 		position: absolute;
-		top: 4vmin;
-		left: -1.9vmin;
-		width: 0.2vmin;
-		height: calc(100% - 4vmin);
+		top: var(--paper-roll-top);
+		left: var(--paper-roll-left);
+		width: var(--paper-roll-line-width);
+		height: var(--paper-roll-height);
 		background: repeating-linear-gradient(
 			180deg,
-			#ccc6,
-			#fff calc(1px + 0.8vmin) calc(0.8vmin + 2px)
+			var(--color-gray-transparent),
+			var(--color-white) calc(1px + 0.8vmin) calc(0.8vmin + 2px)
 		);
+		transition: var(--transition);
 	}
-	input {
+
+	/* Checkbox */
+	.checkbox {
 		display: none;
 	}
-	label[for='btn'] {
+
+	/* Toggle Button */
+	.btn {
 		position: absolute;
 		top: 0;
 		left: 0;
-		width: calc(var(--sz) * 4);
-		height: calc(var(--sz) * 2);
-		background: linear-gradient(180deg, #fff 30%, #ccc 30%);
+		width: var(--toggle-width);
+		height: var(--btn-height);
+		background: linear-gradient(180deg, var(--color-white) 30%, var(--color-gray) 30%);
 		background-size: 100% 200%;
 		background-repeat: no-repeat;
-		background-position: 0 4vmin;
-		transition: background-size 0.5s ease 0s;
+		background-position: 0 var(--paper-roll-top);
+		transition: var(--transition);
+		box-sizing: border-box;
 	}
-	#btn:checked + label[for='btn'] {
-		background-size: 260% calc(100% - 4vmin);
+
+	.checkbox:checked + .btn {
+		background-size: 260% var(--paper-roll-height);
 	}
-	label[for='btn']::before,
-	label[for='btn']::after {
+
+	/* ON/OFF Labels */
+	.btn::before,
+	.btn::after {
 		content: 'ON';
 		position: absolute;
 		width: 50%;
-		color: #9acd32;
+		color: var(--color-on);
 		text-align: center;
 		height: 100%;
 		line-height: 23.5vmin;
@@ -83,62 +135,59 @@
 		text-shadow:
 			0 1px 2px #0008,
 			0 -2px 1px #eee;
+		transition: var(--transition);
 	}
-	label[for='btn']::after {
+
+	.btn::after {
 		content: 'OFF';
 		right: 0.5vmin;
 		padding: 0;
 		text-align: right;
-		color: #ffc;
+		color: var(--color-off);
 		text-shadow:
 			0 -2px 2px #ffffff87,
 			0 1px 2px #222;
 	}
+
+	/* Thumb (Toggle Handle) */
 	.thumb {
 		position: absolute;
-		width: calc(calc(var(--sz) * 2 - calc(var(--sz) / 3)));
-		height: calc(calc(var(--sz) * 2 - calc(var(--sz) / 30)));
-		top: calc(calc(var(--sz) / 10 + calc(var(--sz) / -15)));
-		left: calc(calc(var(--sz) / 10 - calc(var(--sz) * 0.35)));
-		background:
-			repeating-conic-gradient(from -90deg at 0.15vmin 90%, #d3d5de80 0 25%, #ffff 0 100%),
-			repeating-conic-gradient(from -90deg at 0.15vmin 90%, #d3d5de80 0 25%, #ffff 0 100%),
-			repeating-conic-gradient(from -90deg at 0.15vmin 90%, #d3d5de80 0 25%, #ffff 0 100%);
-		border-radius: 50% 50% 50% 50% / 15% 15% 15% 15%;
-		box-shadow: calc(var(--sz) * -0.35) calc(var(--sz) * 0.35) calc(var(--sz) * 30) 0 #ffff;
+		width: var(--thumb-width);
+		height: var(--thumb-height);
+		top: var(--thumb-top-offset);
+		left: var(--thumb-left-offset);
+		background: var(--thumb-gradient), var(--thumb-gradient), var(--thumb-gradient);
+		border-radius: 50% / 15%;
+		box-shadow: calc(var(--sz) * -0.35) calc(var(--sz) * 0.35) calc(var(--sz) * 30) 0
+			var(--color-white-full);
 		cursor: pointer;
-		display: flex;
 		z-index: 1;
 		overflow: hidden;
 		background-repeat: repeat-x, repeat-y, repeat-y, no-repeat;
-		background-position:
-			-90% 0,
-			5% 0,
-			185% 0,
-			0 0;
-		background-size:
-			50% 1vmin,
-			50% 1vmin,
-			50% 1vmin,
-			100% 100%;
+		background-position: var(--thumb-bg-position-default);
+		background-size: var(--thumb-bg-size);
+		transition: var(--transition);
 	}
-	#btn:checked + label .thumb {
-		transition: var(--tr);
-		left: calc(calc(100% - calc(var(--sz) * 2) - calc(var(--sz) / 3)) - var(--sz) / 10) +
-			calc(var(--sz) * 0.075);
-		background-position:
-			150% 0,
-			150% 0,
-			285% 0,
-			0 0;
+
+	.checkbox:checked + .btn .thumb {
+		left: calc(100% - var(--thumb-width) - var(--sz) / 10 + var(--thumb-left-checked-offset));
+		background-position: var(--thumb-bg-position-checked);
 	}
+
+	/* Thumb Highlight */
 	.thumb::before {
 		content: '';
 		position: absolute;
 		width: 100%;
 		height: 25%;
 		background:
-			raddial-gradient(ellipse at 50% 50%, #fff 2.75vmin, #fff calc(2.75vmin + 2px) 100%), #d3d5de80;
+			radial-gradient(
+				ellipse at 50% 50%,
+				var(--color-white) 2.75vmin,
+				var(--color-white) calc(2.75vmin + 2px) 100%
+			),
+			var(--color-shadow);
 		border-radius: 100%;
+		transition: var(--transition);
 	}
 </style>
