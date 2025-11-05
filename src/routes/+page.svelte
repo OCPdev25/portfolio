@@ -10,6 +10,7 @@
 	import Footer from '$lib/components/Footer.svelte';
 	import ProfilePicture from '$lib/components/ProfilePicture.svelte';
 	import propImage from '$lib/assets/prop.jpg';
+	import PaperRoll from '$lib/components/PaperRoll.svelte';
 
 	// Randomize on each component mount (page load/navigation)
 	let orderedIcons = $state<Array<{ name: string; component: any }>>([]);
@@ -24,6 +25,8 @@
 <Navigation />
 
 <ProfilePicture imageSrc={propImage} alt="Profile picture" />
+
+<PaperRoll />
 
 <HeroSection />
 
