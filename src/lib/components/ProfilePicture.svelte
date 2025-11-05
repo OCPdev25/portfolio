@@ -44,6 +44,7 @@
 
 <div
 	class="profile-picture-outer {sizeClasses[size]}"
+	role="presentation"
 	onmouseenter={() => (isHovered = true)}
 	onmouseleave={() => (isHovered = false)}
 >
