@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { Tween } from 'svelte/motion';
-	import { elasticOut } from 'svelte/easing';
+	import { quintOut } from 'svelte/easing';
 
 	let hovered = $state(false);
 
 	const hoverProgress = Tween.of(() => (hovered ? 1 : 0), {
-		duration: 300,
-		easing: elasticOut
+		duration: 600,
+		easing: quintOut
 	});
 
 	const paperUnroll = $derived(hoverProgress.current);
@@ -26,8 +26,8 @@
 	.paper-roll {
 		/* Sizing */
 		--base-size: 10vmin;
-		--container-width: calc(var(--base-size) * 4);
-		--container-height: calc(var(--base-size) * 4);
+		--container-width: calc(var(--base-size) * 1.5);
+		--container-height: calc(var(--base-size) * 1.5);
 		--paper-roll-top-offset: 4vmin;
 		--paper-roll-left-offset: 2vmin;
 		--paper-roll-height: calc(100% - var(--paper-roll-top-offset) * 2);
@@ -43,13 +43,13 @@
 		--paper-unroll-max-width: 35vmin;
 		--paper-unroll-width-multiplier: 0.5vmin;
 		--paper-clip-wave-base: 0%;
-		--paper-clip-wave-small: 1%;
-		--paper-clip-wave-medium: 3%;
-		--paper-clip-wave-large: 5%;
+		--paper-clip-wave-small: 2%;
+		--paper-clip-wave-medium: 5%;
+		--paper-clip-wave-large: 8%;
 
 		/* Colors */
-		--color-paper: #fff;
-		--color-lines-base: #ccc6;
+		--color-paper: #f5e6d3;
+		--color-lines-base: #8b7355;
 		--color-cylinder-base: #8b7355;
 		--color-cylinder-dark: #5a4d3a;
 		--color-cylinder-darker: #6b5d47;
@@ -157,32 +157,28 @@
 	.paper-roll::before {
 		left: calc(var(--paper-roll-left-offset) + var(--paper-offset-from-cylinder));
 		width: calc(var(--paper-width-rolled) + var(--paper-unroll, 0) * var(--paper-unroll-max-width));
-		background-color: var(--color-paper);
+		background: linear-gradient(
+			to right,
+			var(--color-paper) 0%,
+			#f9eddd 50%,
+			var(--color-paper) 100%
+		);
+		transform: translateY(calc(var(--paper-unroll, 0) * -0.4vmin))
+			rotateZ(calc(var(--paper-unroll, 0) * -1deg));
+		box-shadow: calc(var(--paper-unroll, 0) * 0.4vmin) calc(var(--paper-unroll, 0) * 0.3vmin)
+			calc(var(--paper-unroll, 0) * 0.8vmin) rgba(0, 0, 0, calc(var(--paper-unroll, 0) * 0.2));
 		z-index: var(--z-paper);
 		clip-path: polygon(
-			calc(var(--paper-clip-wave-base) + var(--paper-unroll, 0) * var(--paper-clip-wave-large)) 0%,
-			calc(var(--paper-clip-wave-medium) + var(--paper-unroll, 0) * 2%) 2%,
-			calc(var(--paper-clip-wave-small) + var(--paper-unroll, 0) * 1%) 15%,
-			calc(var(--paper-clip-wave-large) + var(--paper-unroll, 0) * 2%) 40%,
-			calc(var(--paper-clip-wave-medium) + var(--paper-unroll, 0) * 1%) 65%,
-			calc(var(--paper-clip-wave-large) + var(--paper-unroll, 0) * 2%) 85%,
-			calc(var(--paper-clip-wave-medium) + var(--paper-unroll, 0) * 1%) 98%,
+			0% 0%,
+			calc(100% - var(--paper-unroll, 0) * var(--paper-clip-wave-large)) 0%,
+			calc(100% - var(--paper-unroll, 0) * 3% - var(--paper-clip-wave-medium)) 2%,
+			calc(100% - var(--paper-unroll, 0) * 2% - var(--paper-clip-wave-small)) 15%,
+			calc(100% - var(--paper-unroll, 0) * 4% - var(--paper-clip-wave-large)) 40%,
+			calc(100% - var(--paper-unroll, 0) * 2% - var(--paper-clip-wave-medium)) 65%,
+			calc(100% - var(--paper-unroll, 0) * 3% - var(--paper-clip-wave-large)) 85%,
+			calc(100% - var(--paper-unroll, 0) * 2% - var(--paper-clip-wave-medium)) 98%,
 			100% 100%,
-			100% 0%
+			0% 100%
 		);
-	}
-
-	.paper-roll::after {
-		left: calc(var(--paper-roll-left-offset) + var(--lines-offset-from-cylinder));
-		width: calc(
-			var(--paper-line-width) + var(--paper-unroll, 0) * var(--paper-unroll-width-multiplier)
-		);
-		background: repeating-linear-gradient(
-			180deg,
-			var(--color-lines-base),
-			var(--color-paper) calc(1px + 0.8vmin) calc(0.8vmin + 2px)
-		);
-		opacity: calc(var(--opacity-lines-base) + var(--paper-unroll, 0) * var(--opacity-lines-base));
-		z-index: var(--z-lines);
 	}
 </style>
