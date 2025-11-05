@@ -10,7 +10,7 @@
 	});
 
 	const paperUnroll = $derived(hoverProgress.current);
-	
+
 	// Wave activation logic
 	const isFullyUnrolled = $derived(paperUnroll >= 0.95);
 	let waveActive = $state(false);
@@ -36,12 +36,12 @@
 	onmouseleave={() => (hovered = false)}
 >
 	<span class="cylinder"></span>
-	
+
 	<!-- Paper slices for wave effect -->
 	<div class="paper-container" class:wave-active={waveActive}>
 		{#each slices as sliceIndex}
-			<div 
-				class="paper-slice" 
+			<div
+				class="paper-slice"
 				style={`--slice-index: ${sliceIndex}; --slice-delay: ${sliceIndex * 80}ms;`}
 			></div>
 		{/each}
@@ -66,7 +66,7 @@
 		--lines-offset-from-cylinder: calc(var(--cylinder-width) * 0.5);
 
 		/* Animation */
-		--paper-unroll-max-width: 28vmin;
+		--paper-unroll-max-width: 20vmin;
 		--paper-unroll-width-multiplier: 0.5vmin;
 		--paper-clip-wave-base: 0%;
 		--paper-clip-wave-small: 2%;
@@ -177,29 +177,33 @@
 		top: var(--paper-roll-top-offset);
 		width: calc(var(--paper-width-rolled) + var(--paper-unroll, 0) * var(--paper-unroll-max-width));
 		height: var(--paper-roll-height);
-		display: flex;
 		transform: translateY(calc(var(--paper-unroll, 0) * -0.2vmin));
 		transform-style: preserve-3d;
 		perspective: 1000px;
 		pointer-events: none;
 		z-index: var(--z-paper);
-	}
-
-	/* Individual Paper Slices */
-	.paper-slice {
-		position: relative;
-		width: calc(100% / 14);
-		height: 100%;
 		background: linear-gradient(
 			to right,
 			var(--color-paper) 0%,
 			#f9eddd 50%,
 			var(--color-paper) 100%
 		);
-		background-size: calc(100% * 14) 100%;
-		background-position-x: calc(var(--slice-index) * -100%);
+		background-size: 100% 100%;
+		background-position: 0 0;
+	}
+
+	/* Individual Paper Slices */
+	.paper-slice {
+		position: absolute;
+		left: calc((100% / 14) * var(--slice-index) - 1px);
+		width: calc(100% / 14);
+		height: 100%;
+		background-image: inherit;
+		background-repeat: no-repeat;
+		background-size: calc(100% * 14 + 14px) 100%;
+		background-position-x: calc(var(--slice-index) * calc(-100% / 14) * 14 / 13 + 1px);
 		transform-style: preserve-3d;
-		transform-origin: left center;
+		transform-origin: 0 0;
 		box-shadow: calc(var(--paper-unroll, 0) * 0.4vmin) calc(var(--paper-unroll, 0) * 0.3vmin)
 			calc(var(--paper-unroll, 0) * 0.8vmin) rgba(0, 0, 0, calc(var(--paper-unroll, 0) * 0.15));
 		clip-path: polygon(
