@@ -1,9 +1,34 @@
 <script lang="ts">
+	interface Props {
+		/** External control: bind:checked to this prop to control the toggle state */
+		checked?: boolean;
+		/** Callback function called when toggle state changes */
+		onChange?: (checked: boolean) => void;
+	}
+
+	let { checked = $bindable(false), onChange }: Props = $props();
+
 	let checkboxId = `paper-roll-${Math.random().toString(36).substring(2, 9)}`;
+
+	function handleChange(event: Event) {
+		const target = event.target as HTMLInputElement;
+		const newValue = target.checked;
+		checked = newValue;
+		onChange?.(newValue);
+	}
 </script>
 
 <div class="toggle">
-	<input type="checkbox" id={checkboxId} class="checkbox" />
+	<input
+		type="checkbox"
+		id={checkboxId}
+		class="checkbox"
+		role="switch"
+		aria-checked={checked}
+		aria-label="Toggle switch"
+		{checked}
+		onchange={handleChange}
+	/>
 	<label for={checkboxId} class="btn">
 		<span class="thumb"></span>
 	</label>
@@ -67,6 +92,7 @@
 	}
 
 	/* Paper Roll Effect - Left side */
+	/* Hidden by default, shown when checked */
 	.toggle::before {
 		content: '';
 		position: absolute;
@@ -76,7 +102,10 @@
 		height: var(--paper-roll-height);
 		background-color: var(--color-white);
 		clip-path: polygon(0% 0%, 18% 8, 2% 39%, 21% 80%, 2% 90%, 15% 105%, 100% 100%, 100% 0%);
+		opacity: 0;
+		transform: translateX(-2vmin);
 		transition: var(--transition);
+		pointer-events: none;
 	}
 
 	.toggle::after {
@@ -91,7 +120,17 @@
 			var(--color-gray-transparent),
 			var(--color-white) calc(1px + 0.8vmin) calc(0.8vmin + 2px)
 		);
+		opacity: 0;
+		transform: translateX(-2vmin);
 		transition: var(--transition);
+		pointer-events: none;
+	}
+
+	/* Show paper roll when checked */
+	.toggle:has(.checkbox:checked)::before,
+	.toggle:has(.checkbox:checked)::after {
+		opacity: 1;
+		transform: translateX(0);
 	}
 
 	/* Checkbox */
